@@ -30,7 +30,7 @@ public class DBHelper extends SQLiteOpenHelper {
         String createNoteTableSql = "CREATE TABLE " + TABLE_NOTE + "("
                 + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + COLUMN_NOTE_CONTENT + " TEXT ) ";
-        db.execSQL(createNoteTableSql);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTE);
         Log.i("info", "created tables");
 
         //Dummy records, to be inserted when the database is created
@@ -97,6 +97,30 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
         return result;
     }
+
+    public ArrayList<Note> getAllNotes(String keyword) {
+        ArrayList<Note> notes = new ArrayList<Note>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] columns= {COLUMN_ID, COLUMN_NOTE_CONTENT};
+        String condition = COLUMN_NOTE_CONTENT + " Like ?";
+        String[] args = { "%" +  keyword + "%"};
+        Cursor cursor = db.query(TABLE_NOTE, columns, condition, args,
+                null, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(0);
+                String noteContent = cursor.getString(1);
+                Note note = new Note(id, noteContent);
+                notes.add(note);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return notes;
+    }
+
 
 }
 

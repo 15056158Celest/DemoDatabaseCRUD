@@ -26,6 +26,10 @@ public class Note implements Serializable {
         this.noteContent = noteContent;
     }
 
+    public String toString() {
+        return "ID:" + id + ", " + noteContent;
+    }
+
 
 
 }
